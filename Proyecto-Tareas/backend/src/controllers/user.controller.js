@@ -1,0 +1,34 @@
+import { User } from "../models/User.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+export const register = async (req, res) => {
+  try {
+    const { nombre, correo, contraseña } = req.body;
+    const existe = await User.findOne({ where: { correo } });
+    if (existe) return res.status(400).json({ error: "Correo ya registrado" });
+
+    const hash = await bcrypt.hash(contraseña, 10);
+    const user = await User.create({ nombre, correo, contraseña: hash });
+
+    res.json({ message: "Usuario registrado", user });
+  } catch (error) {
+    res.status(500).json({ error: "Error al registrar usuario" });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { correo, contraseña } = req.body;
+    const user = await User.findOne({ where: { correo } });
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const valid = await bcrypt.compare(contraseña, user.contraseña);
+    if (!valid) return res.status(401).json({ error: "Contraseña incorrecta" });
+
+    const token = jwt.sign({ id: user.id_usuario, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ error: "Error al iniciar sesión" });
+  }
+};

@@ -1,0 +1,17 @@
+import app from "./src/app.js";
+import { sequelize } from "./src/config/database.js";
+
+const PORT = process.env.PORT || 4000;
+
+async function start() {
+  try {
+    await sequelize.authenticate();
+    console.log("Conexión a BD exitosa");
+    await sequelize.sync({ alter: true }); // crea/actualiza tablas
+    app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+  } catch (error) {
+    console.error("Error al conectar BD:", error);
+  }
+}
+
+start();
