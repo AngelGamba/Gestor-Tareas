@@ -32,3 +32,15 @@ export const login = async (req, res) => {
     res.status(500).json({ error: "Error al iniciar sesión" });
   }
 };
+
+// ✅ Nuevo: Listar usuarios
+export const getUsuarios = async (req, res) => {
+  try {
+    const usuarios = await User.findAll({
+      attributes: ["id_usuario", "nombre", "correo", "rol"], // evita enviar contraseña
+    });
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener usuarios" });
+  }
+};

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 
 function Tareas() {
   const [tareas, setTareas] = useState([]);
@@ -39,22 +40,35 @@ function Tareas() {
   // Crear tarea
   const crearTarea = async (e) => {
     e.preventDefault();
-    await api.post("/tareas", { titulo, descripcion }, { headers });
-    setTitulo("");
-    setDescripcion("");
-    fetchTareas();
+    try {
+      await api.post("/tareas", { titulo, descripcion }, { headers });
+      setTitulo(""); setDescripcion("");
+      fetchTareas();
+    } catch (e) {
+      alert("No se pudo crear la tarea");
+    }
   };
 
   // Asignar tarea
-  const asignarTarea = async (id, id_usuario_asignado) => {
-    await api.put(`/tareas/${id}/asignar`, { id_usuario_asignado }, { headers });
-    fetchTareas();
+  const asignarTarea = async (id_tarea, id_usuario_asignado) => {
+    const idNum = Number(id_usuario_asignado);
+    if (!idNum) return; // evita enviar vacío
+    try {
+      await api.put(`/tareas/${id_tarea}/asignar`, { id_usuario_asignado: idNum }, { headers });
+      fetchTareas();
+    } catch (e) {
+      alert("No se pudo asignar la tarea");
+    }
   };
 
   // Cambiar estado
-  const cambiarEstado = async (id, estado) => {
-    await api.put(`/tareas/${id}/estado`, { estado }, { headers });
-    fetchTareas();
+  const cambiarEstado = async (id_tarea, estado) => {
+    try {
+      await api.put(`/tareas/${id_tarea}/estado`, { estado }, { headers });
+      fetchTareas();
+    } catch (e) {
+      alert("No se pudo cambiar el estado");
+    }
   };
 
   // Generar reporte
@@ -74,21 +88,21 @@ function Tareas() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-200">
-      <h2 className="text-3xl font-bold p-6 text-center text-black mb-8">
+    <Layout>
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-blue-500 to-purple-200">
+      <h2 className="text-3xl font-bold p-10 text-center text-black mb-2">
         📌 Gestor de Tareas
       </h2>
-
       {/* Crear tarea */}
       <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">➕ Crear nueva tarea</h3>
+        <h3 className="text-xl font-semibold text-black mb-4">➕ Crear nueva tarea</h3>
         <form onSubmit={crearTarea} className="flex flex-col md:flex-row gap-4">
           <input
             type="text"
             placeholder="Título"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 px-4 py-2 border rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
             required
           />
           <input
@@ -96,12 +110,12 @@ function Tareas() {
             placeholder="Descripción"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 px-4 py-2 border rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
             required
           />
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition"
+            className="bg-blue-600 hover:bg-purple-500 text-white px-6 py-2 rounded-lg font-medium transition"
           >
             Crear
           </button>
@@ -118,9 +132,9 @@ function Tareas() {
           >
             <div className="flex justify-between items-center">
               <div>
-                <h4 className="text-lg font-semibold text-gray-800">{t.titulo}</h4>
-                <p className="text-gray-500">{t.descripcion}</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <h4 className="text-lg font-semibold text-blue-700">{t.titulo}</h4>
+                <p className="text-gray-600">{t.descripcion}</p>
+                <p className="text-sm text-purple-500 mt-1">
                   Creada por: {t.creador?.nombre} | Asignada a:{" "}
                   {t.asignado?.nombre || "Nadie"}
                 </p>
@@ -142,7 +156,7 @@ function Tareas() {
             <div className="flex gap-2 mt-4">
               <select
                 onChange={(e) => asignarTarea(t.id_tarea, e.target.value)}
-                className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Asignar a...</option>
                 {usuarios.map((u) => (
@@ -155,7 +169,7 @@ function Tareas() {
               <select
                 onChange={(e) => cambiarEstado(t.id_tarea, e.target.value)}
                 value={t.estado}
-                className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="pendiente">Pendiente</option>
                 <option value="en progreso">En progreso</option>
@@ -165,54 +179,8 @@ function Tareas() {
           </li>
         ))}
       </ul>
-
-      {/* Reportes */}
-      <div className="bg-white p-6 rounded-xl shadow-lg mt-10">
-        <h3 className="text-xl font-semibold text-gray-700 mb-4">
-          📊 Generar Reporte (solo admin)
-        </h3>
-        <form onSubmit={generarReporte} className="flex flex-col md:flex-row gap-4">
-          <input
-            type="date"
-            value={desde}
-            onChange={(e) => setDesde(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-            required
-          />
-          <input
-            type="date"
-            value={hasta}
-            onChange={(e) => setHasta(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition"
-          >
-            Generar
-          </button>
-        </form>
-
-        {reporte.length > 0 && (
-          <div className="mt-6">
-            <h4 className="text-lg font-semibold text-gray-700 mb-2">
-              Reporte de tareas completadas
-            </h4>
-            <ul className="space-y-2">
-              {reporte.map((r) => (
-                <li
-                  key={r.id_tarea}
-                  className="bg-gray-50 p-3 rounded-lg border"
-                >
-                  {r.titulo} - {r.descripcion} ({r.estado})
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
     </div>
+    </Layout>
   );
 }
 

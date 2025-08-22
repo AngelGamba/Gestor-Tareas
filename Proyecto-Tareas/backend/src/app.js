@@ -10,10 +10,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas
-app.get("/", (req, res) => {
-    res.send("API Gestor de Tareas funcionando");
-});
 app.use("/api/usuarios", userRoutes);
 app.use("/api/tareas", taskRoutes);
 

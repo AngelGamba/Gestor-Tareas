@@ -12,7 +12,7 @@ function Login() {
     try {
       const res = await api.post("/usuarios/login", { correo, contraseña });
       localStorage.setItem("token", res.data.token);
-      navigate("/tareas");
+      navigate("/dashboard");
     } catch {
       alert("Credenciales incorrectas");
     }
@@ -45,7 +45,7 @@ function Login() {
         </form>
         <p className="text-center text-gray-500 mt-4">
           ¿No tienes cuenta?{" "}
-          <span className="text-purple-600 font-semibold cursor-pointer" onClick={() => navigate("/registro")}>
+          <span className="text-purple-600 font-semibold cursor-pointer" onClick={() => navigate("/register")}>
             Regístrate
           </span>
         </p>
