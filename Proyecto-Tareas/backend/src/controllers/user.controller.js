@@ -5,6 +5,14 @@ import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   try {
     const { nombre, correo, contraseña } = req.body;
+    
+    const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#*!_.¡\-])[A-Za-z\d@$#*!_.¡\-]{8,}$/;
+    if (!regexPassword.test(contraseña)) {
+      return res.status(400).json({
+        error: "La contraseña debe tener mínimo 8 caracteres, al menos 1 mayúscula, 1 minúscula, 1 número y 1 caracter especial (@, $, #, *, !, -, _, ., ¡)."
+      });
+    }
+    
     const existe = await User.findOne({ where: { correo } });
     if (existe) return res.status(400).json({ error: "Correo ya registrado" });
 

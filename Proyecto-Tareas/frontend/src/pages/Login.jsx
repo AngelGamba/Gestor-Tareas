@@ -20,13 +20,19 @@ function Login() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-700 to-purple-100">
+      <button
+        onClick={() => navigate("/home")}
+        className="absolute top-6 left-6 bg-blue-200 hover:bg-purple-100 text-gray-700 px-6 py-2 rounded-lg font-medium transition shadow-md"
+      >
+        ⬅️ Volver al Home
+      </button>
       <div className="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md">
         <h2 className="text-3xl font-bold text-center text-indigo-800 mb-6">Iniciar Sesión</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             placeholder="Correo"
-            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-3 border rounded-xl ring-1 focus:ring-2 focus:ring-indigo-500"
             value={correo}
             onChange={(e) => setCorreo(e.target.value)}
             required
@@ -34,7 +40,7 @@ function Login() {
           <input
             type="password"
             placeholder="Contraseña"
-            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-3 border rounded-xl ring-1 focus:ring-2 focus:ring-indigo-500"
             value={contraseña}
             onChange={(e) => setContraseña(e.target.value)}
             required
@@ -46,7 +52,7 @@ function Login() {
         <p className="text-center text-gray-500 mt-4">
           ¿No tienes cuenta?{" "}
           <span className="text-purple-600 font-semibold cursor-pointer" onClick={() => navigate("/register")}>
-            Regístrate
+            Regístrate{" "}
           </span>
         </p>
       </div>

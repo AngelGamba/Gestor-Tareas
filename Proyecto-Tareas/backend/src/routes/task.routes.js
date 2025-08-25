@@ -1,14 +1,6 @@
 import { Router } from "express";
-import {
-    crearTarea,
-    listarTareas,
-    actualizarTarea,
-    eliminarTarea,
-    asignarTarea,
-    cambiarEstado,
-    generarReporte
-} from "../controllers/task.controller.js";
-import { authMiddleware } from "../middlewares/auth.js";
+import {crearTarea, listarTareas, actualizarTarea, eliminarTarea, asignarTarea, cambiarEstado, generarReporte} from "../controllers/task.controller.js";
+import { authMiddleware, soloAdmin } from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -21,6 +13,6 @@ router.delete("/:id", authMiddleware, eliminarTarea);
 // Extra
 router.put("/:id/asignar", authMiddleware, asignarTarea);
 router.put("/:id/estado", authMiddleware, cambiarEstado);
-router.get("/reportes", authMiddleware, generarReporte);
+router.get("/reportes", authMiddleware, soloAdmin, generarReporte);
 
 export default router;
