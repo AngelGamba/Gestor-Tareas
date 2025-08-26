@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-08-2025 a las 23:55:53
+-- Tiempo de generación: 26-08-2025 a las 21:45:04
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -96,15 +96,14 @@ CREATE TABLE `tasks` (
 INSERT INTO `tasks` (`id_tarea`, `titulo`, `descripcion`, `estado`, `fecha_creacion`, `fecha_vencimiento`, `createdAt`, `updatedAt`, `id_usuario_creador`, `id_usuario_asignado`) VALUES
 (1, 'PrimerTarea', 'Primera', 'pendiente', '2025-08-25 21:10:39', '2025-08-28 00:00:00', '2025-08-25 21:10:39', '2025-08-25 21:10:39', 1, NULL),
 (2, 'SegundaTarea', 'Segunda', 'pendiente', '2025-08-25 21:11:16', '2025-08-28 00:00:00', '2025-08-25 21:11:16', '2025-08-25 21:11:16', 1, NULL),
-(3, 'TercerTarea', 'Tercera', 'pendiente', '2025-08-25 21:14:19', '2025-08-30 00:00:00', '2025-08-25 21:14:19', '2025-08-25 21:49:15', 1, 2),
+(3, 'TercerTarea', 'Tercera', 'completada', '2025-08-25 21:14:19', '2025-08-30 00:00:00', '2025-08-25 21:14:19', '2025-08-26 15:28:43', 1, 2),
 (4, 'CuartaTarea', 'Cuarta', 'pendiente', '2025-08-25 21:26:31', '2025-08-29 00:00:00', '2025-08-25 21:26:31', '2025-08-25 21:26:31', 1, NULL),
 (5, 'QuintaTarea', 'Quinta', 'en progreso', '2025-08-25 21:31:26', '2025-08-30 00:00:00', '2025-08-25 21:31:26', '2025-08-25 21:50:13', 1, 2),
 (6, 'SextaTarea', 'Sexta', 'pendiente', '2025-08-25 21:36:17', NULL, '2025-08-25 21:36:17', '2025-08-25 21:36:17', 1, NULL),
-(7, 'SeptimaTarea', 'Septima', 'en progreso', '2025-08-25 21:37:09', '2025-08-30 00:00:00', '2025-08-25 21:37:09', '2025-08-25 21:50:11', 1, 2),
 (8, 'OctavaTarea', 'Octava', 'pendiente', '2025-08-25 21:43:15', NULL, '2025-08-25 21:43:15', '2025-08-25 21:43:15', 1, NULL),
-(9, 'NovenaTarea', 'Novena', 'completada', '2025-08-25 21:43:35', '2025-08-30 00:00:00', '2025-08-25 21:43:35', '2025-08-25 21:50:09', 1, 2),
-(10, 'DecimaTarea', 'Decima', 'pendiente', '2025-08-25 21:48:21', NULL, '2025-08-25 21:48:21', '2025-08-25 21:48:21', 1, NULL),
-(11, 'OnceavaTarea', 'Onceava', 'pendiente', '2025-08-25 21:48:40', '2025-08-31 00:00:00', '2025-08-25 21:48:40', '2025-08-25 21:48:40', 1, NULL);
+(11, 'OnceavaTarea', 'Onceava', 'pendiente', '2025-08-25 21:48:40', NULL, '2025-08-25 21:48:40', '2025-08-26 15:20:47', 1, NULL),
+(13, 'SuperTarea', 'Super', 'completada', '2025-08-26 15:41:39', NULL, '2025-08-26 15:41:39', '2025-08-26 17:06:33', 2, 1),
+(14, 'Hola', 'hola', 'pendiente', '2025-08-26 16:58:31', NULL, '2025-08-26 16:58:31', '2025-08-26 16:58:31', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -197,7 +196,13 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `correo_12` (`correo`),
   ADD UNIQUE KEY `correo_13` (`correo`),
   ADD UNIQUE KEY `correo_14` (`correo`),
-  ADD UNIQUE KEY `correo_15` (`correo`);
+  ADD UNIQUE KEY `correo_15` (`correo`),
+  ADD UNIQUE KEY `correo_16` (`correo`),
+  ADD UNIQUE KEY `correo_17` (`correo`),
+  ADD UNIQUE KEY `correo_18` (`correo`),
+  ADD UNIQUE KEY `correo_19` (`correo`),
+  ADD UNIQUE KEY `correo_20` (`correo`),
+  ADD UNIQUE KEY `correo_21` (`correo`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -226,7 +231,7 @@ ALTER TABLE `tareas`
 -- AUTO_INCREMENT de la tabla `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id_tarea` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_tarea` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
@@ -276,7 +281,19 @@ ALTER TABLE `tasks`
   ADD CONSTRAINT `tasks_ibfk_20` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_21` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_22` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_23` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_24` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_25` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_26` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_27` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_28` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_29` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_30` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_31` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_32` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_33` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `tasks_ibfk_34` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_4` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_5` FOREIGN KEY (`id_usuario_creador`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tasks_ibfk_6` FOREIGN KEY (`id_usuario_asignado`) REFERENCES `users` (`id_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,

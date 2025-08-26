@@ -12,6 +12,9 @@ function Login() {
     try {
       const res = await api.post("/usuarios/login", { correo, contraseña });
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("id_usuario", res.data.user.id_usuario);
+      localStorage.setItem("rol", res.data.user.rol);
+      localStorage.setItem("nombre", res.data.user.nombre);
       navigate("/dashboard");
     } catch {
       alert("Credenciales incorrectas");

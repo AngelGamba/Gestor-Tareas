@@ -2,6 +2,18 @@ import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import { 
+  User,          // 👤 Usuario
+  LogOut,        // 🚪 Cerrar sesión / Salir
+  FileText,      // 📄 Tareas
+  PlusCircle,    // ➕ Crear tarea
+  Edit,          // ✏️ Editar tarea
+  Trash2,        // 🗑️ Eliminar (para el creador)
+  XCircle,       // ❌ Salir de tarea (para el asignado)
+  CheckCircle,   // ✅ Completar
+  BarChart3      // 📊 Reportes
+} from "lucide-react";
+
 
 function Tareas() {
   const [tareas, setTareas] = useState([]);
@@ -15,6 +27,7 @@ function Tareas() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const idUsuario = parseInt(localStorage.getItem("id_usuario"));
 
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -60,6 +73,38 @@ function Tareas() {
       alert(e.response?.data?.error || "No se pudo crear la tarea");
     }
   };
+
+  // Editar tarea (solo creador)
+  const editarTarea = async (id_tarea) => {
+  const nuevoTitulo = prompt("Nuevo título:");
+  const nuevaDescripcion = prompt("Nueva descripción:");
+  const nuevaFecha = prompt("Nueva fecha (YYYY-MM-DD) o deja vacío para quitar:");
+
+  try {
+    await api.put(`/tareas/${id_tarea}`, {
+      titulo: nuevoTitulo,
+      descripcion: nuevaDescripcion,
+      fecha_vencimiento: nuevaFecha || null,
+    }, { headers });
+
+    fetchTareas();
+  } catch (e) {
+    alert(e.response?.data?.error || "No se pudo editar la tarea");
+  }
+};
+
+  // Eliminar tarea (diferente para creador/asignado)
+  const eliminarTarea = async (id_tarea) => {
+    if (!window.confirm("¿Seguro que deseas eliminar/salir de esta tarea?")) return;
+
+    try {
+      await api.delete(`/tareas/${id_tarea}`, { headers });
+      fetchTareas();
+    } catch (e) {
+      alert(e.response?.data?.error || "No se pudo eliminar la tarea");
+    }
+};
+
 
   // Asignar tarea
   const asignarTarea = async (id_tarea, id_usuario_asignado) => {
@@ -188,27 +233,63 @@ function Tareas() {
 
               {/* Asignar & Cambiar estado */}
               <div className="flex gap-2 mt-4">
-                <select
-                  onChange={(e) => asignarTarea(t.id_tarea, e.target.value)}
-                  className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="">Asignar a...</option>
-                  {usuarios.map((u) => (
-                    <option key={u.id_usuario} value={u.id_usuario}>
-                      {u.nombre}
-                    </option>
-                  ))}
-                </select>
+                {t.creador?.id_usuario === idUsuario && (
+                  <select
+                    onChange={(e) => asignarTarea(t.id_tarea, e.target.value)}
+                    className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Asignar a...</option>
+                    {usuarios
+                      .filter((u) => u.id_usuario !== idUsuario) // 👈 excluye al creador
+                      .map((u) => (
+                        <option key={u.id_usuario} value={u.id_usuario}>
+                          {u.nombre}
+                        </option>
+                      ))}
+                  </select>
+                )}
 
-                <select
-                  onChange={(e) => cambiarEstado(t.id_tarea, e.target.value)}
-                  value={t.estado}
-                  className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="pendiente">Pendiente</option>
-                  <option value="en progreso">En progreso</option>
-                  <option value="completada">Completada</option>
-                </select>
+                {t.asignado?.id_usuario === idUsuario && (
+                  <select
+                    onChange={(e) => cambiarEstado(t.id_tarea, e.target.value)}
+                    value={t.estado}
+                    className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en progreso">En progreso</option>
+                    <option value="completada">Completada</option>
+                  </select>
+                )}
+
+                  {/* Editar (solo creador) */}
+                  {t.creador?.id_usuario === idUsuario && (
+                    <button 
+                      onClick={() => editarTarea(t.id_tarea)} 
+                      className="flex items-center  bg-blue-200 hover:bg-purple-200 text-black px-4 mx-1 ring-2 rounded-lg font-medium transition shadow"
+                    >
+                      <Edit className="w-6 h-4" /> Editar
+                    </button>
+                  )}
+
+                  {/* Eliminar (si es creador) o Salir (si es asignado) */}
+                  <button 
+                    onClick={() => eliminarTarea(t.id_tarea)} 
+                    className={`flex items-center gap-1 px-4 py-2 rounded-lg font-medium transition shadow ${
+                      t.creador?.id_usuario === idUsuario 
+                        ? "bg-gradient-to-br from-blue-600 to-purple-500 text-white" // 🔴 Eliminar (creador)
+                        : "bg-gradient-to-br from-blue-600 to-purple-500 text-white" // 🚪 Salir (asignado)
+                    }`}
+                  >
+                    {t.creador?.id_usuario === idUsuario ? (
+                      <>
+                        <Trash2 className="w-4 h-4" /> Eliminar
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4" /> Salir
+                      </>
+                    )}
+                  </button>
               </div>
             </li>
           ))}

@@ -1,7 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { User } from "lucide-react"; // 👈 icono de usuario bonito
 
 function Navbar() {
   const navigate = useNavigate();
+  const [nombre, setNombre] = useState("");
+  const [rol, setRol] = useState("");
+
+  useEffect(() => {
+    const nombreGuardado = localStorage.getItem("nombre");
+    const rolGuardado = localStorage.getItem("rol");
+    if (nombreGuardado) setNombre(nombreGuardado);
+    if (rolGuardado) setRol(rolGuardado);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -29,6 +40,23 @@ function Navbar() {
             </Link>
         </div>
 
+        {/* Usuario + logout */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 bg-indigo-800 px-4 py-2 rounded-full shadow-md">
+            <User size={20} />
+            <div className="flex flex-col">
+              <span className="font-medium">{nombre || "Invitado"}</span>
+              {rol && (
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full text-white font-semibold w-fit
+                  ${rol === "admin" ? "bg-yellow-500" : "bg-blue-500"}`}
+                >
+                  {rol.toUpperCase()}
+                </span>
+              )}
+            </div>
+          </div>
+        
         {/* Logout */}
         <button
           onClick={handleLogout}
@@ -36,6 +64,7 @@ function Navbar() {
         >
           Logout
         </button>
+        </div>
       </div>
     </nav>
   );

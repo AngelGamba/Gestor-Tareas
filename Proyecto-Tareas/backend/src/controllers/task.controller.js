@@ -61,8 +61,8 @@ export const listarTareas = async (req, res) => {
   }
 };
 
-// Actualizar tarea
-export const actualizarTarea = async (req, res) => {
+// Editar tarea
+export const editarTarea = async (req, res) => {
   try {
     const { id } = req.params;
     let { titulo, descripcion, fecha_vencimiento } = req.body;
@@ -102,23 +102,40 @@ export const actualizarTarea = async (req, res) => {
     res.json(tarea);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error al actualizar tarea" });
+    res.status(500).json({ error: "Error al editar tarea" });
   }
 };
 
-// Eliminar tarea
+// Eliminar tarea (comportamiento diferente si es creador o asignado)
 export const eliminarTarea = async (req, res) => {
   try {
     const { id } = req.params;
     const tarea = await Task.findByPk(id);
 
     if (!tarea) return res.status(404).json({ error: "Tarea no encontrada" });
-    if (tarea.id_usuario_creador !== req.user.id)
-      return res.status(403).json({ error: "No autorizado" });
 
-    await tarea.destroy();
-    res.json({ message: "Tarea eliminada" });
+    // ✅ Caso 1: el creador la elimina -> se borra de la BD
+    if (tarea.id_usuario_creador === req.user.id) {
+      await tarea.destroy();
+      return res.json({ message: "Tarea eliminada por el creador (ya no existe)" });
+    }
+
+    // ✅ Caso 2: el asignado la elimina -> se desasigna y se reinicia a pendiente
+    if (tarea.id_usuario_asignado === req.user.id) {
+      tarea.id_usuario_asignado = null;
+      tarea.estado = "pendiente"; // 👈 resetear estado
+      await tarea.save();
+      return res.json({
+        message: "Te has eliminado de la tarea (sigue existiendo para el creador en estado pendiente)",
+        tarea,
+      });
+    }
+
+    // Si no es creador ni asignado → no tiene permiso
+    return res.status(403).json({ error: "No autorizado para eliminar esta tarea" });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error al eliminar tarea" });
   }
 };
