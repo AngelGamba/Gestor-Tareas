@@ -1,6 +1,7 @@
 import { Task } from "../models/Task.js";
 import { User } from "../models/User.js";
 import { Op } from "sequelize";
+import { Notification } from "../models/Notification.js";
 
 // Crear tarea
 export const crearTarea = async (req, res) => {
@@ -153,7 +154,11 @@ export const asignarTarea = async (req, res) => {
 
     tarea.id_usuario_asignado = id_usuario_asignado;
     await tarea.save();
-
+    await Notification.create({
+    id_usuario_destino: id_usuario_asignado,
+    mensaje: `Se te ha asignado la tarea: ${tarea.titulo}`,
+    id_tarea: tarea.id_tarea,
+    });
     res.json({ message: "Tarea asignada", tarea });
   } catch (error) {
     res.status(500).json({ error: "Error al asignar tarea" });

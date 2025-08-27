@@ -1,5 +1,6 @@
 import app from "./src/app.js";
 import { sequelize } from "./src/config/database.js";
+import { Notification } from "./src/models/Notification.js";
 
 const PORT = process.env.PORT || 8080;
 
