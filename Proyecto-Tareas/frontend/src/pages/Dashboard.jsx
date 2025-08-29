@@ -55,53 +55,11 @@ function Dashboard() {
 
   return (
     <Layout>
-      <div className="min-h-screen pt-20 bg-gradient-to-br from-blue-500 to-purple-200">
+      <div className="min-h-screen pt-20 p-20 bg-gradient-to-br from-blue-500 to-purple-200">
         <h2 className="text-3xl font-bold p-10 text-center text-black mb-2">
           📊 Panel de Control
         </h2>
-
-        {/* Filtro por fechas */}
-        <div className="bg-white p-6 rounded-xl shadow-md mb-10 flex flex-col sm:flex-row items-center gap-4">
-            <h3 className="text-xl font-semibold text-black mb-4">Crear nueva tarea</h3>
-          <div>
-            <label className="block text-sm font-medium text-indigo-700">
-              Desde
-            </label>
-            <input
-              type="date"
-              value={desde}
-              onChange={(e) => setDesde(e.target.value)}
-              className="mt-1 border rounded-lg px-3 py-2 text-gray-700 ring-1 focus:ring focus:ring-indigo-300"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-indigo-700">
-              Hasta
-            </label>
-            <input
-              type="date"
-              value={hasta}
-              onChange={(e) => setHasta(e.target.value)}
-              className="mt-1 border rounded-lg px-3 py-2 text-gray-700 ring-1 focus:ring focus:ring-indigo-300"
-            />
-          </div>
-          <button
-            onClick={fetchStats}
-            className="text-white px-4 py-2 rounded-lg bg-blue-600 hover:bg-purple-500 shadow transition"
-          >
-            Filtrar
-          </button>
-          <button
-            onClick={() => {
-              setDesde("");
-              setHasta("");
-            }}
-            className="text-white px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-500 shadow transition"
-          >
-            Reset
-          </button>
-        </div>
-
+        
         {/* Cards con métricas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
           <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-purple-500">

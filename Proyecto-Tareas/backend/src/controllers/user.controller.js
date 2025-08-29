@@ -60,3 +60,24 @@ export const getUsuarios = async (req, res) => {
     res.status(500).json({ error: "Error al obtener usuarios" });
   }
 };
+
+export const updateRol = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rol } = req.body;
+
+    if (!["user", "admin"].includes(rol)) {
+      return res.status(400).json({ error: "Rol inválido" });
+    }
+
+    const usuario = await User.findByPk(id);
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    usuario.rol = rol;
+    await usuario.save();
+
+    res.json({ message: "Rol actualizado con éxito", usuario });
+  } catch (err) {
+    res.status(500).json({ error: "Error al actualizar rol" });
+  }
+};

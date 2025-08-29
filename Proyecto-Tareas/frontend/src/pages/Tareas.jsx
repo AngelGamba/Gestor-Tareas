@@ -47,7 +47,6 @@ function Tareas() {
     if (!scrolledRef.current) {
       scrolledRef.current = true;
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-      try { el.focus(); } catch {}
     }
 
     // Apagar highlight a los 2s SIEMPRE (vengas de donde vengas)
@@ -151,7 +150,7 @@ function Tareas() {
 
   return (
     <Layout>
-      <div className="min-h-screen pt-20 bg-gradient-to-br from-blue-500 to-purple-200">
+      <div className="min-h-screen pt-20 p-20 bg-gradient-to-br from-blue-500 to-purple-200">
         <h2 className="text-3xl font-bold p-10 text-center text-black mb-2">📌 Gestor de Tareas</h2>
 
         {/* Crear tarea */}
@@ -159,11 +158,11 @@ function Tareas() {
           <h3 className="text-xl font-semibold text-black mb-4">➕ Crear nueva tarea</h3>
           <form onSubmit={crearTarea} className="flex flex-col md:flex-row gap-4">
             <input type="text" placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500" required />
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white" required />
             <input type="text" placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500" required />
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white" required />
             <input type="date" value={fechaVencimiento} onChange={(e) => setFechaVencimiento(e.target.value)}
-              min={todayISO} className="px-4 py-2 border rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500" />
+              min={todayISO} className="px-4 border rounded-lg focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white" />
             <button type="submit" className="bg-blue-600 hover:bg-purple-500 text-white px-6 py-2 rounded-lg font-medium transition">
               Crear
             </button>
@@ -207,7 +206,7 @@ function Tareas() {
                 <div className="flex gap-2 mt-4">
                   {t.creador?.id_usuario === idUsuario && (
                     <select onChange={(e) => asignarTarea(t.id_tarea, e.target.value)}
-                      className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500">
+                      className="px-2 py-2 border rounded-lg focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white">
                       <option value="">Asignar a...</option>
                       {usuarios.filter((u) => u.id_usuario !== idUsuario).map((u) => (
                         <option key={u.id_usuario} value={u.id_usuario}>{u.nombre}</option>
@@ -217,7 +216,7 @@ function Tareas() {
 
                   {t.asignado?.id_usuario === idUsuario && (
                     <select onChange={(e) => cambiarEstado(t.id_tarea, e.target.value)} value={t.estado}
-                      className="border px-3 py-2 rounded-lg ring-1 focus:ring-2 focus:ring-indigo-500">
+                      className="px-2 py-2 border rounded-lg focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white">
                       <option value="pendiente">Pendiente</option>
                       <option value="en progreso">En progreso</option>
                       <option value="completada">Completada</option>

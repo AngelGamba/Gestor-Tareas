@@ -35,7 +35,7 @@ function Login() {
           <input
             type="email"
             placeholder="Correo"
-            className="w-full px-4 py-3 border rounded-xl ring-1 focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white"
             value={correo}
             onChange={(e) => setCorreo(e.target.value)}
             required
@@ -43,7 +43,7 @@ function Login() {
           <input
             type="password"
             placeholder="Contraseña"
-            className="w-full px-4 py-3 border rounded-xl ring-1 focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white"
             value={contraseña}
             onChange={(e) => setContraseña(e.target.value)}
             required

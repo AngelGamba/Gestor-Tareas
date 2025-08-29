@@ -5,6 +5,8 @@ import Tareas from "./pages/Tareas";
 import Reportes from "./pages/Reportes";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
+import Buscar from "./pages/Buscar";
+import Usuarios from "./pages/Usuarios";
 
 function App() {
   return (
@@ -16,8 +18,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tareas" element={<Tareas />} />
+        <Route path="/buscar" element={<Buscar />} />
         <Route path="/reportes" element={<Reportes />} />
-
+        <Route path="/usuarios" element={<Usuarios />} />
       </Routes>
     </BrowserRouter>
   );

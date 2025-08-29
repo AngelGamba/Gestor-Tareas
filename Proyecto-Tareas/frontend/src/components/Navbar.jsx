@@ -73,7 +73,13 @@ function Navbar() {
         <div className="flex gap-6">
           <Link to="/dashboard" className="hover:text-purple-200 transition font-medium">Dashboard</Link>
           <Link to="/tareas" className="hover:text-purple-200 transition font-medium">Tareas</Link>
+          <Link to="/buscar" className="hover:text-purple-200 transition font-medium">Buscar</Link>
           <Link to="/reportes" className="hover:text-purple-200 transition font-medium">Reportes</Link>
+          {rol === "admin" && (
+          <Link to="/Usuarios" className="hover:text-purple-200 transition font-medium">
+            Usuarios
+          </Link>
+        )}
         </div>
 
         <div className="flex items-center gap-4 relative" ref={dropdownRef}>
