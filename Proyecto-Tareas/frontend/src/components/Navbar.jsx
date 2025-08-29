@@ -74,12 +74,12 @@ function Navbar() {
           <Link to="/dashboard" className="hover:text-purple-200 transition font-medium">Dashboard</Link>
           <Link to="/tareas" className="hover:text-purple-200 transition font-medium">Tareas</Link>
           <Link to="/buscar" className="hover:text-purple-200 transition font-medium">Buscar</Link>
+        {rol === "admin" && (
+          <Link to="/Usuarios" className="hover:text-purple-200 transition font-medium">Usuarios</Link>
+          )}
+        {rol === "admin" && (
           <Link to="/reportes" className="hover:text-purple-200 transition font-medium">Reportes</Link>
-          {rol === "admin" && (
-          <Link to="/Usuarios" className="hover:text-purple-200 transition font-medium">
-            Usuarios
-          </Link>
-        )}
+          )}
         </div>
 
         <div className="flex items-center gap-4 relative" ref={dropdownRef}>
@@ -137,7 +137,7 @@ function Navbar() {
           </div>
 
           <button onClick={handleLogout} className="text-black bg-blue-400 hover:bg-red-400 px-4 py-2 rounded-lg font-medium transition">
-            Logout
+            Cerrar Sesión  
           </button>
         </div>
       </div>

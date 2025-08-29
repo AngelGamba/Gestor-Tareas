@@ -49,7 +49,7 @@ function Admin() {
               {usuarios.map((u) => (
                 <li
                   key={u.id_usuario}
-                  className="p-4 bg-gray-50 rounded-lg shadow flex justify-between items-center"
+                  className="p-4 bg-gradient-to-r from-white to-yellow-100 rounded-lg shadow flex justify-between items-center"
                 >
                   <span>
                     <strong>{u.nombre}</strong> ({u.correo})

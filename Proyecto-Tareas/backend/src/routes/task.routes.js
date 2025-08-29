@@ -13,6 +13,5 @@ router.delete("/:id", authMiddleware, eliminarTarea);
 // Extra
 router.put("/:id/asignar", authMiddleware, asignarTarea);
 router.put("/:id/estado", authMiddleware, cambiarEstado);
-router.get("/reportes", authMiddleware, soloAdmin, generarReporte);
 
 export default router;

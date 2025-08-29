@@ -7,8 +7,8 @@ const router = Router();
 router.post("/registro", register);
 router.post("/login", login);
 
-// ✅ Listar usuarios (solo admin)
-router.get("/", authMiddleware, soloAdmin, getUsuarios);
+// ✅ Listar usuarios
+router.get("/", authMiddleware, getUsuarios);
 
 // ✅ Cambiar rol (solo admin)
 router.put("/:id/rol", authMiddleware, soloAdmin, updateRol);

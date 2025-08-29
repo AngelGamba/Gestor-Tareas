@@ -25,6 +25,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true,
       },
+      fecha_completada: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       id_usuario_creador: {
         type: Sequelize.INTEGER,
         allowNull: true,

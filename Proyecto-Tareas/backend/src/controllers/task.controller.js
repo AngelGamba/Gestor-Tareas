@@ -1,6 +1,8 @@
 import { Task } from "../models/Task.js";
 import { User } from "../models/User.js";
 import { Op } from "sequelize";
+import { Parser } from "json2csv"; // 👈 para CSV
+import PDFDocument from "pdfkit";  // 👈 para PDF
 import { Notification } from "../models/Notification.js";
 
 // Crear tarea
@@ -165,46 +167,108 @@ export const asignarTarea = async (req, res) => {
   }
 };
 
-// Cambiar estado
+// ✅ Cambiar estado de tarea
 export const cambiarEstado = async (req, res) => {
   try {
     const { id } = req.params;
     const { estado } = req.body;
-    const tarea = await Task.findByPk(id);
 
-    if (!tarea) return res.status(404).json({ error: "Tarea no encontrada" });
+    const task = await Task.findByPk(id);
+    if (!task) {
+      return res.status(404).json({ error: "Tarea no encontrada" });
+    }
 
-    // Solo el asignado puede cambiar estado
-    if (tarea.id_usuario_asignado !== req.user.id)
-      return res.status(403).json({ error: "No autorizado" });
+    task.estado = estado;
 
-    tarea.estado = estado;
-    await tarea.save();
+    // Si se completa → guardar fecha actual
+    if (estado === "completada") {
+      task.fecha_completada = new Date();
+    } else {
+      task.fecha_completada = null; // opcional: limpiar si vuelve a otro estado
+    }
 
-    res.json(tarea);
+    await task.save();
+
+    res.json({ message: "Estado actualizado", task });
   } catch (error) {
-    res.status(500).json({ error: "Error al cambiar estado" });
+    console.error("Error en cambiarEstado:", error);
+    res.status(500).json({ error: "Error al cambiar estado de la tarea" });
   }
 };
 
 // Reporte de tareas completadas
 export const generarReporte = async (req, res) => {
   try {
-    if (req.user.rol !== "admin")
-      return res.status(403).json({ error: "Solo admin puede generar reportes" });
+    const { desde, hasta, formato } = req.query;
 
-    const { desde, hasta } = req.query;
-    const tareas = await Task.findAll({
-      where: {
-        estado: "completada",
-        createdAt: {
-          [Op.between]: [new Date(desde), new Date(hasta)],
-        },
-      },
-    });
+    if (!desde || !hasta) {
+      return res.status(400).json({ error: "Debes enviar fechas 'desde' y 'hasta'." });
+    }
 
+    const fechaDesde = new Date(`${desde}T00:00:00.000Z`);
+const fechaHasta = new Date(`${hasta}T23:59:59.999Z`);
+
+
+    const hoy = new Date();
+
+    // ❌ Validaciones de rango
+    if (fechaDesde > fechaHasta) {
+      return res.status(400).json({ error: "El rango de fechas no es válido (desde > hasta)." });
+    }
+    // Normalizamos "hoy" al inicio del día (UTC)
+const hoyUTC = new Date();
+hoyUTC.setUTCHours(23, 59, 59, 999);
+
+// Validar solo hasta la fecha de hoy (sin importar la hora exacta)
+if (fechaHasta > hoyUTC) {
+  return res.status(400).json({ error: "No se pueden generar reportes con fechas futuras." });
+}
+
+
+    console.log("Fecha desde:", fechaDesde.toISOString());
+console.log("Fecha hasta:", fechaHasta.toISOString());
+
+    // ✅ Buscar tareas completadas
+const tareas = await Task.findAll({
+  where: {
+    estado: "completada",
+    fecha_completada: {
+      [Op.between]: [fechaDesde, fechaHasta],
+    },
+  },
+  attributes: ["id_tarea", "titulo", "descripcion", "fecha_completada"],
+  include: [
+    { model: User, as: "asignado", attributes: ["id_usuario", "nombre"] },
+  ],
+});
+
+    // 📂 Exportar en diferentes formatos
+    if (formato === "csv") {
+      const parser = new Parser();
+      const csv = parser.parse(tareas.map(t => t.toJSON()));
+      res.header("Content-Type", "text/csv");
+      res.attachment(`reporte_tareas_${desde}_${hasta}.csv`);
+      return res.send(csv);
+    }
+
+    if (formato === "pdf") {
+      const doc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="reporte_tareas_${desde}_${hasta}.pdf"`);
+      doc.pipe(res);
+      doc.fontSize(18).text("Reporte de Tareas Completadas", { align: "center" });
+      doc.moveDown();
+      tareas.forEach(t => {
+        doc.fontSize(12).text(`- ${t.titulo} | ${t.descripcion} | Completada: ${new Date(t.fecha_completada).toLocaleDateString()}`);
+      });
+      doc.end();
+      return;
+    }
+
+    // Por defecto: JSON
     res.json(tareas);
-  } catch (error) {
-    res.status(500).json({ error: "Error al generar reporte" });
+  } catch (err) {
+    console.error("Error en generarReporte:", err);
+    res.status(500).json({ error: "Error al generar reporte." });
   }
 };
