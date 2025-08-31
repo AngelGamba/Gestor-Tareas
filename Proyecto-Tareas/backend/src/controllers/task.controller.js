@@ -206,43 +206,34 @@ export const generarReporte = async (req, res) => {
     }
 
     const fechaDesde = new Date(`${desde}T00:00:00.000Z`);
-const fechaHasta = new Date(`${hasta}T23:59:59.999Z`);
+    const fechaHasta = new Date(`${hasta}T23:59:59.999Z`);
 
+    // Normalizar "hoy"
+    const hoyUTC = new Date();
+    hoyUTC.setUTCHours(23, 59, 59, 999);
 
-    const hoy = new Date();
-
-    // ❌ Validaciones de rango
     if (fechaDesde > fechaHasta) {
       return res.status(400).json({ error: "El rango de fechas no es válido (desde > hasta)." });
     }
-    // Normalizamos "hoy" al inicio del día (UTC)
-const hoyUTC = new Date();
-hoyUTC.setUTCHours(23, 59, 59, 999);
-
-// Validar solo hasta la fecha de hoy (sin importar la hora exacta)
-if (fechaHasta > hoyUTC) {
-  return res.status(400).json({ error: "No se pueden generar reportes con fechas futuras." });
-}
-
-
-    console.log("Fecha desde:", fechaDesde.toISOString());
-console.log("Fecha hasta:", fechaHasta.toISOString());
+    if (fechaHasta > hoyUTC) {
+      return res.status(400).json({ error: "No se pueden generar reportes con fechas futuras." });
+    }
 
     // ✅ Buscar tareas completadas
-const tareas = await Task.findAll({
-  where: {
-    estado: "completada",
-    fecha_completada: {
-      [Op.between]: [fechaDesde, fechaHasta],
-    },
-  },
-  attributes: ["id_tarea", "titulo", "descripcion", "fecha_completada"],
-  include: [
-    { model: User, as: "asignado", attributes: ["id_usuario", "nombre"] },
-  ],
-});
+    const tareas = await Task.findAll({
+      where: {
+        estado: "completada",
+        fecha_completada: {
+          [Op.between]: [fechaDesde, fechaHasta],
+        },
+      },
+      attributes: ["id_tarea", "titulo", "descripcion", "fecha_completada"],
+      include: [
+        { model: User, as: "asignado", attributes: ["id_usuario", "nombre"] },
+      ],
+    });
 
-    // 📂 Exportar en diferentes formatos
+    // 📂 CSV
     if (formato === "csv") {
       const parser = new Parser();
       const csv = parser.parse(tareas.map(t => t.toJSON()));
@@ -251,22 +242,80 @@ const tareas = await Task.findAll({
       return res.send(csv);
     }
 
+    // 📄 PDF con tabla
     if (formato === "pdf") {
-      const doc = new PDFDocument();
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename="reporte_tareas_${desde}_${hasta}.pdf"`);
-      doc.pipe(res);
-      doc.fontSize(18).text("Reporte de Tareas Completadas", { align: "center" });
-      doc.moveDown();
-      tareas.forEach(t => {
-        doc.fontSize(12).text(`- ${t.titulo} | ${t.descripcion} | Completada: ${new Date(t.fecha_completada).toLocaleDateString()}`);
+  const doc = new PDFDocument({ margin: 40 });
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="reporte_tareas_${desde}_${hasta}.pdf"`
+  );
+  doc.pipe(res);
+
+  // --- Título ---
+  doc.font("Helvetica-Bold").fontSize(18).text("Reporte de Tareas Completadas", {
+    align: "center",
+  });
+  doc.moveDown(2);
+
+  // --- Config tabla ---
+  const tableTop = doc.y;
+  const colX = [50, 200, 350, 450]; // posiciones X de cada columna
+  const colW = [150, 150, 100, 120]; // anchos de cada columna
+  const headers = ["Título", "Asignado", "Fecha", "Descripción"];
+
+  // Dibujar encabezados
+  doc.font("Helvetica-Bold").fontSize(12);
+  let headerHeight = 30;
+
+  headers.forEach((header, i) => {
+    doc.rect(colX[i], tableTop, colW[i], headerHeight).stroke();
+    doc.text(header, colX[i] + 5, tableTop + 8, {
+      width: colW[i] - 10,
+      align: "center",
+    });
+  });
+
+  // --- Filas ---
+  let y = tableTop + headerHeight;
+  doc.font("Helvetica").fontSize(10);
+
+  tareas.forEach((t) => {
+    const fecha = new Date(t.fecha_completada).toLocaleDateString();
+
+    const values = [
+      t.titulo,
+      t.asignado?.nombre || "Nadie",
+      fecha,
+      t.descripcion || "-",
+    ];
+
+    // Calcular altura dinámica de la fila (según texto más alto)
+    const heights = values.map((val, i) =>
+      doc.heightOfString(val.toString(), { width: colW[i] - 10 })
+    );
+    const rowHeight = Math.max(...heights) + 15; // 15px de padding
+
+    // Dibujar celdas
+    values.forEach((val, i) => {
+      doc.rect(colX[i], y, colW[i], rowHeight).stroke(); // borde celda
+      doc.text(val, colX[i] + 5, y + 8, {
+        width: colW[i] - 10,
+        align: "left",
       });
-      doc.end();
-      return;
-    }
+    });
+
+    y += rowHeight;
+  });
+
+  doc.end();
+  return;
+}
+
 
     // Por defecto: JSON
     res.json(tareas);
+
   } catch (err) {
     console.error("Error en generarReporte:", err);
     res.status(500).json({ error: "Error al generar reporte." });

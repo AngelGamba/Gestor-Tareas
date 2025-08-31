@@ -34,7 +34,7 @@ function Admin() {
 
   return (
     <Layout>
-      <div className="min-h-screen pt-20 bg-gradient-to-br from-yellow-100 to-yellow-100">
+      <div className="min-h-screen pt-20 p-20 bg-gradient-to-br from-yellow-100 to-yellow-100">
         <h2 className="text-3xl font-bold p-10 text-center text-indigo-800 mb-2">
           👑 Panel de Usuarios
         </h2>
@@ -66,9 +66,8 @@ function Admin() {
                   <select
                     value={u.rol}
                     onChange={(e) => cambiarRol(u.id_usuario, e.target.value)}
-                    className="px-4 py-2 border rounded-lg px-4 py-2 focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white"
-                  >
-                    <option value="user">User</option>
+                    className="px-4 py-2 border rounded-lg px-4 py-2 focus:outline-none ring-2 ring-purple-500 focus:ring-4 focus:ring-indigo-600 shadow-sm bg-white">
+                    <option value="usuario">User</option>
                     <option value="admin">Admin</option>
                   </select>
                 </li>

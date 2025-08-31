@@ -66,7 +66,7 @@ export const updateRol = async (req, res) => {
     const { id } = req.params;
     const { rol } = req.body;
 
-    if (!["user", "admin"].includes(rol)) {
+    if (!["usuario", "admin"].includes(rol)) {
       return res.status(400).json({ error: "Rol inválido" });
     }
 

@@ -29,13 +29,41 @@ function Reportes() {
     }
   };
 
-  const descargar = (formato) => {
-    window.open(`http://localhost:3000/api/reportes/tareas?desde=${desde}&hasta=${hasta}&formato=${formato}`, "_blank");
-  };
+  const descargar = async (formato) => {
+  try {
+    const res = await api.get(
+      `/reportes/tareas?desde=${desde}&hasta=${hasta}&formato=${formato}`,
+      { headers, responseType: "blob" } // 👈 importante
+    );
+
+    // Crear un objeto Blob con la respuesta
+    const blob = new Blob([res.data], { 
+      type: formato === "pdf" ? "application/pdf" : "text/csv" 
+    });
+
+    // Crear una URL para ese Blob
+    const url = window.URL.createObjectURL(blob);
+
+    // Crear un enlace oculto y disparar la descarga
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `reporte_tareas_${desde}_${hasta}.${formato}`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Limpieza
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("❌ Error al descargar reporte:", error);
+    setMensaje("Error al descargar el reporte. Intenta de nuevo.");
+  }
+};
+
 
   return (
     <Layout>
-      <div className="min-h-screen pt-20 bg-gradient-to-br from-yellow-100 to-yellow-100">
+      <div className="min-h-screen pt-20 p-20 bg-gradient-to-br from-yellow-100 to-yellow-100">
         <h2 className="text-3xl font-bold p-10 text-center text-indigo-800 mb-2">
           📊 Reporte de Tareas
         </h2>
