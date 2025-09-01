@@ -33,7 +33,7 @@ function Reportes() {
   try {
     const res = await api.get(
       `/reportes/tareas?desde=${desde}&hasta=${hasta}&formato=${formato}`,
-      { headers, responseType: "blob" } // 👈 importante
+      { headers, responseType: "blob" }
     );
 
     // Crear un objeto Blob con la respuesta

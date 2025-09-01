@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+
 function Layout({ children }) {
   return (
     <div className="">
@@ -8,7 +9,6 @@ function Layout({ children }) {
     </>
       {/* Contenido principal */}
       <main className="flex-1 w-full px-6 ">
-        
         {children}
       </main>
     </div>

@@ -37,8 +37,8 @@ export const Notification = sequelize.define("Notification", {
     allowNull: true,
   },
 }, {
-  tableName: "notifications", // 👈 nombre real de tu tabla
-  timestamps: false,           // 👈 ya tienes columna fecha, no usar createdAt/updatedAt
+  tableName: "notifications", 
+  timestamps: false,           
 });
 
 // Relación con User

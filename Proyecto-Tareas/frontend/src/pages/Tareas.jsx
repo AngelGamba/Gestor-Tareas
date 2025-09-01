@@ -32,7 +32,7 @@ function Tareas() {
     const h = q.get("highlight");
     if (h) {
       setHighlightTarget(Number(h));
-      setHighlightActive(true);   // 🔥 enciende highlight
+      setHighlightActive(true);   // enciende highlight
       scrolledRef.current = false; // permitir scroll una sola vez para este highlight
     }
   }, [location.search]);

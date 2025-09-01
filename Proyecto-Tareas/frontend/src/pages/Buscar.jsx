@@ -9,7 +9,7 @@ function Buscar() {
   const [filtered, setFiltered] = useState([]);
 
   const token = localStorage.getItem("token");
-  const idUsuario = parseInt(localStorage.getItem("id_usuario")); // 👈 usuario actual
+  const idUsuario = parseInt(localStorage.getItem("id_usuario")); // usuario actual
   const headers = { Authorization: `Bearer ${token}` };
 
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ function Buscar() {
       try {
         const res = await api.get("/tareas", { headers });
 
-        // 👇 Filtrar SOLO tareas creadas o asignadas al usuario actual
+        // Filtrar SOLO tareas creadas o asignadas al usuario actual
         const propias = res.data.filter(
           (t) =>
             t.creador?.id_usuario === idUsuario ||
@@ -46,7 +46,7 @@ function Buscar() {
     }
   }, [search, tareas]);
 
-  // 🔗 Ir a la tarea seleccionada
+  // Ir a la tarea seleccionada
   const irATarea = (id_tarea) => {
     navigate(`/tareas?highlight=${id_tarea}`);
   };
